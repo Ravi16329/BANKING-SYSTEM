@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MANA BANKING Application 1</title>
+  <link rel="stylesheet">
+</head>
+<style>
+
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
+}
+
+
+header {
+  background-color: #004080;
+  color: #fff;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header .logo h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+header nav ul {
+  list-style: none;
+  display: flex;
+}
+
+header nav ul li {
+  margin-left: 20px;
+}
+
+header nav ul li button {
+  background-color: #0066cc;
+  border: none;
+  color: #fff;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+header nav ul li button:hover {
+  background-color: #005bb5;
+}
+
+
+.container {
+  width: 90%;
+  max-width: 600px;
+  margin: 30px auto;
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.container h2 {
+  margin-bottom: 15px;
+  color: #004080;
+}
+
+.container p {
+  margin-bottom: 20px;
+}
+
+
+button {
+  padding: 10px 20px;
+  background-color: #004080;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #003366;
+}
+
+
+form {
+  margin-bottom: 20px;
+}
+
+form label {
+  display: block;
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.transaction-section {
+  margin-bottom: 25px;
+}
+
+.transaction-section h3 {
+  margin-bottom: 10px;
+  color: #0066cc;
+}
+
+
+.transaction-history {
+  max-height: 200px;
+  overflow-y: auto;
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
+  text-align: left;
+}
+
+.transaction-history p {
+  margin-bottom: 8px;
+}
+
+
+.message {
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.message.hidden {
+  display: none;
+}
+
+.message.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+
+.hidden {
+  display: none;
+}
+
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  width: 80%;
+  max-width: 500px;
+  background-color: #fff;
+  border-radius: 8px;
+  z-index: 1001;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  padding: 20px;
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.modal-content h2 {
+  margin-bottom: 15px;
+  color: #004080;
+}
+
+.modal-content p {
+  margin-bottom: 10px;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #aaa;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.close:hover {
+  color: #000;
+}
+
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1000;
+  animation: fadeInOverlay 0.3s ease-out forwards;
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  header nav ul {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  header nav ul li {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+
+  .container {
+    padding: 15px;
+  }
+
+  .modal {
+    width: 90%;
+  }
+}
+
+
+</style>
+
+
+<body>
+
+  <header>
+    <div class="logo">
+      <h1>MANA BANK</h1>
+    </div>
+    <nav>
+      <ul>
+        <li><button onclick="openModal('helpModal')">Help</button></li>
+        <li><button onclick="openModal('aboutModal')">About Us</button></li>
+        <li><button onclick="openModal('infoModal')">Bank Information</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Main  -->
+  <div class="container">
+    <!-- Welcome Page -->
+    <div id="welcomePage">
+      <h2>Welcome to MANA BANK</h2>
+      <p>Your trusted partner in financial services.</p>
+      <button onclick="showLogin()">Login</button>
+      <button onclick="showSignUp()">Create Account</button>
+      <div id="welcomeMessage" class="message hidden"></div>
+    </div>
+
+    <!-- Login Page -->
+    <div id="loginPage" class="hidden">
+      <h2>Login to Your Account</h2>
+      <form id="loginForm">
+        <label for="loginUsername">Username:</label>
+        <input type="text" id="loginUsername" placeholder="Enter Username" required />
+
+        <label for="loginPassword">Password:</label>
+        <input type="password" id="loginPassword" placeholder="Enter Password" required />
+
+        <button type="submit">Login</button>
+      </form>
+      <p>New to MANA BANK? <button onclick="showSignUp()">Create an Account</button></p>
+      <div id="loginMessage" class="message hidden"></div>
+    </div>
+
+    <!-- Sign Up Page -->
+    <div id="signUpPage" class="hidden">
+      <h2>Create Your Account</h2>
+      <form id="signUpForm">
+        <label for="signUpUsername">Username:</label>
+        <input type="text" id="signUpUsername" placeholder="Choose a Username" required />
+
+        <label for="signUpPassword">Password:</label>
+        <input type="password" id="signUpPassword" placeholder="Choose a Password" required />
+
+        <button type="submit">Sign Up</button>
+      </form>
+      <p>Already have an account? <button onclick="showLogin()">Login</button></p>
+      <div id="signUpMessage" class="message hidden"></div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div id="dashboardPage" class="hidden">
+      <h2>Welcome, <span id="userWelcome"></span></h2>
+      <p>Balance: $<span id="balance">0.00</span></p>
+
+      <div class="transaction-section">
+        <h3>Deposit Money</h3>
+        <form id="creditForm">
+          <input type="number" id="creditAmount" placeholder="Enter amount to deposit" min="1" required />
+          <button type="submit">Deposit</button>
+        </form>
+      </div>
+
+      <div class="transaction-section">
+        <h3>Withdraw Money</h3>
+        <form id="debitForm">
+          <input type="number" id="debitAmount" placeholder="Enter amount to withdraw" min="1" required />
+          <button type="submit">Withdraw</button>
+        </form>
+      </div>
+
+      <div class="transaction-section">
+        <h3>Send Money</h3>
+        <form id="sendMoneyForm">
+          <input type="text" id="recipientUsername" placeholder="Recipient Username" required />
+          <input type="number" id="sendAmount" placeholder="Amount to Send" min="1" required />
+          <button type="submit">Send</button>
+        </form>
+      </div>
+
+      <h3>Transaction History</h3>
+      <div class="transaction-history" id="transactionHistory"></div>
+
+      <button onclick="logout()">Logout</button>
+      <div id="transactionMessage" class="message hidden"></div>
+    </div>
+  </div>
+
+
+  <!-- Help Modal -->
+  <div id="helpModal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('helpModal')">&times;</span>
+      <h2>Help</h2>
+      <p>For any help, contact our support team member RAVI at sem3pse@manabank.com or call us at (008) 456-7890.</p>
+    </div>
+  </div>
+
+  <!-- About Us Modal -->
+  <div id="aboutModal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('aboutModal')">&times;</span>
+      <h2>About Us</h2>
+      <p>MANA BANK has been serving customers since 2023 semptember 11, providing reliable and secure banking services.</p>
+    </div>
+  </div>
+
+  <!-- Bank Information Modal -->
+  <div id="infoModal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('infoModal')">&times;</span>
+      <h2>Bank Information</h2>
+      <p>Address: Andhra Pradesh , Vijayawada , Amaravathi , VITAP near Secretary .</p>
+      <p>Operating Hours: Monday to Friday, 9 AM to 5 PM.</p>
+    </div>
+  </div>
+
+  <!-- Overlay for Modals -->
+  <div id="overlay" class="overlay hidden" onclick="closeAllModals()"></div>
+
+  <!-- Dashboard Page -->
+<div id="dashboardPage" class="hidden">
+  <h2>Welcome, <span id="userWelcome"></span></h2>
+  <p>Balance: $<span id="balance">0.00</span></p>
+
+  <div class="transaction-section">
+    <h3>Deposit Money</h3>
+    <form id="creditForm">
+      <input type="number" id="creditAmount" placeholder="Enter amount to deposit" min="1" required />
+      <button type="submit">Deposit</button>
+    </form>
+  </div>
+
+  <div class="transaction-section">
+    <h3>Withdraw Money</h3>
+    <form id="debitForm">
+      <input type="number" id="debitAmount" placeholder="Enter amount to withdraw" min="1" required />
+      <button type="submit">Withdraw</button>
+    </form>
+  </div>
+
+  <div class="transaction-section">
+    <h3>Send Money</h3>
+    <form id="sendMoneyForm">
+      <input type="text" id="recipientUsername" placeholder="Recipient Username" required />
+      <input type="number" id="sendAmount" placeholder="Amount to Send" min="1" required />
+      <button type="submit">Send</button>
+    </form>
+  </div>
+
+  <!-- New Buttons for Checking Balance and Number of Accounts -->
+  <button onclick="checkBalance()">Check Balance</button>
+  <button onclick="checkTotalAccounts()">Check Total Accounts</button>
+
+  <h3>Transaction History</h3>
+  <div class="transaction-history" id="transactionHistory"></div>
+
+  <button onclick="logout()">Logout</button>
+  <div id="transactionMessage" class="message hidden"></div>
+</div>
+
+
+  <script>
+    
+    // Initialize usersDB with predefined users
+let usersDB = {
+  "ravi": { password: "10364", balance: 50000, history: [] },
+  "chandu": { password: "100", balance: 300000, history: [] },
+  "likith": { password: "7210", balance: 700054, history: [] },
+  "jagadeesh": { password: "7199", balance: 25100, history: [] }
+};
+
+// Load usersDB from localStorage if available
+if (localStorage.getItem('usersDB')) {
+  usersDB = JSON.parse(localStorage.getItem('usersDB'));
+} else {
+  localStorage.setItem('usersDB', JSON.stringify(usersDB));
+}
+
+let currentUser = null;
+
+// Function to display messages
+function displayMessage(elementId, message, type = 'success') {
+  const element = document.getElementById(elementId);
+  element.innerText = message;
+  element.classList.remove('hidden', 'success', 'error');
+  element.classList.add(type);
+  setTimeout(() => {
+    element.classList.add('hidden');
+  }, 3000);
+}
+
+// Function to update localStorage
+function updateLocalStorage() {
+  localStorage.setItem('usersDB', JSON.stringify(usersDB));
+}
+
+// Function to show Login Page
+function showLogin() {
+  document.getElementById('welcomePage').classList.add('hidden');
+  document.getElementById('signUpPage').classList.add('hidden');
+  document.getElementById('loginPage').classList.remove('hidden');
+  clearAllMessages();
+}
+
+// Function to show Sign Up Page
+function showSignUp() {
+  document.getElementById('welcomePage').classList.add('hidden');
+  document.getElementById('loginPage').classList.add('hidden');
+  document.getElementById('signUpPage').classList.remove('hidden');
+  clearAllMessages();
+}
+
+// Function to show Welcome Page
+function showWelcome() {
+  document.getElementById('loginPage').classList.add('hidden');
+  document.getElementById('signUpPage').classList.add('hidden');
+  document.getElementById('dashboardPage').classList.add('hidden');
+  document.getElementById('welcomePage').classList.remove('hidden');
+  clearAllMessages();
+}
+
+// Function to clear all messages
+function clearAllMessages() {
+  const messages = document.querySelectorAll('.message');
+  messages.forEach(msg => msg.classList.add('hidden'));
+}
+
+// Function to handle Login
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value.trim();
+
+  if (usersDB[username] && usersDB[username].password === password) {
+    currentUser = username;
+    displayMessage('loginMessage', 'Login successful!', 'success');
+    setTimeout(() => {
+      showDashboard();
+    }, 1000);
+  } else {
+    displayMessage('loginMessage', 'Invalid username or password!', 'error');
+  }
+});
+
+// Function to handle Sign Up
+document.getElementById('signUpForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const username = document.getElementById('signUpUsername').value.trim();
+  const password = document.getElementById('signUpPassword').value.trim();
+
+  if (username && password) {
+    if (usersDB[username]) {
+      displayMessage('signUpMessage', 'Username already exists! Try a different one.', 'error');
+    } else {
+      usersDB[username] = { password: password, balance: 0, history: [] };
+      updateLocalStorage();
+      displayMessage('signUpMessage', 'Account created successfully! Redirecting to login...', 'success');
+      setTimeout(showLogin, 2000);
+    }
+  } else {
+    displayMessage('signUpMessage', 'Please enter both username and password.', 'error');
+  }
+});
+
+// Function to show Dashboard
+function showDashboard() {
+  document.getElementById('welcomePage').classList.add('hidden');
+  document.getElementById('loginPage').classList.add('hidden');
+  document.getElementById('signUpPage').classList.add('hidden');
+  document.getElementById('dashboardPage').classList.remove('hidden');
+  document.getElementById('userWelcome').innerText = currentUser;
+  updateDashboard();
+}
+
+// Function to update Dashboard
+function updateDashboard() {
+  const userData = usersDB[currentUser];
+  document.getElementById('balance').innerText = userData.balance.toFixed(2);
+  displayTransactionHistory(userData.history);
+}
+
+// Function to display Transaction History
+function displayTransactionHistory(history) {
+  const historyDiv = document.getElementById('transactionHistory');
+  historyDiv.innerHTML = '';
+  if (history.length === 0) {
+    historyDiv.innerHTML = '<p>No transactions yet.</p>';
+    return;
+  }
+  history.forEach((tx, index) => {
+    const txType = tx.type;
+    const amount = tx.amount.toFixed(2);
+    const detail = tx.detail ? ` - ${tx.detail}` : '';
+    historyDiv.innerHTML += `<p>${index + 1}. ${txType}: $${amount}${detail}</p>`;
+  });
+}
+
+// Function to handle Deposit
+document.getElementById('creditForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const amount = parseFloat(document.getElementById('creditAmount').value);
+  if (isNaN(amount) || amount <= 0) {
+    displayMessage('transactionMessage', 'Please enter a valid amount to deposit.', 'error');
+    return;
+  }
+  usersDB[currentUser].balance += amount;
+  usersDB[currentUser].history.push({ type: 'Deposit', amount: amount, detail: null });
+  updateLocalStorage();
+  updateDashboard();
+  displayMessage('transactionMessage', `Successfully deposited $${amount.toFixed(2)}.`, 'success');
+  document.getElementById('creditAmount').value = '';
+});
+
+// Function to handle Withdraw
+document.getElementById('debitForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const amount = parseFloat(document.getElementById('debitAmount').value);
+  if (isNaN(amount) || amount <= 0) {
+    displayMessage('transactionMessage', 'Please enter a valid amount to withdraw.', 'error');
+    return;
+  }
+  if (usersDB[currentUser].balance < amount) {
+    displayMessage('transactionMessage', 'Insufficient balance.', 'error');
+    return;
+  }
+  usersDB[currentUser].balance -= amount;
+  usersDB[currentUser].history.push({ type: 'Withdraw', amount: amount, detail: null });
+  updateLocalStorage();
+  updateDashboard();
+  displayMessage('transactionMessage', `Successfully withdrew $${amount.toFixed(2)}.`, 'success');
+  document.getElementById('debitAmount').value = '';
+});
+
+// Function to handle Send Money
+document.getElementById('sendMoneyForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const recipient = document.getElementById('recipientUsername').value.trim();
+  const amount = parseFloat(document.getElementById('sendAmount').value);
+
+  if (!usersDB[recipient]) {
+    displayMessage('transactionMessage', 'Recipient does not exist.', 'error');
+    return;
+  }
+
+  if (recipient === currentUser) {
+    displayMessage('transactionMessage', 'You cannot send money to yourself.', 'error');
+    return;
+  }
+
+  if (isNaN(amount) || amount <= 0) {
+    displayMessage('transactionMessage', 'Please enter a valid amount to send.', 'error');
+    return;
+  }
+
+  if (usersDB[currentUser].balance < amount) {
+    displayMessage('transactionMessage', 'Insufficient balance.', 'error');
+    return;
+  }
+
+  // Perform the transaction
+  usersDB[currentUser].balance -= amount;
+  usersDB[recipient].balance += amount;
+
+  // Record transaction for sender
+  usersDB[currentUser].history.push({
+    type: 'Sent',
+    amount: amount,
+    detail: `to ${recipient}`
+  });
+
+  // Record transaction for recipient
+  usersDB[recipient].history.push({
+    type: 'Received',
+    amount: amount,
+    detail: `from ${currentUser}`
+  });
+
+  updateLocalStorage();
+  updateDashboard();
+  displayMessage('transactionMessage', `Successfully sent $${amount.toFixed(2)} to ${recipient}.`, 'success');
+  document.getElementById('recipientUsername').value = '';
+  document.getElementById('sendAmount').value = '';
+});
+
+// Function to handle Logout
+function logout() {
+  currentUser = null;
+  document.getElementById('dashboardPage').classList.add('hidden');
+  showWelcome();
+  displayMessage('welcomeMessage', 'Logged out successfully!', 'success');
+}
+
+// Function to open Modal
+function openModal(modalId) {
+  document.getElementById(modalId).classList.remove('hidden');
+  document.getElementById('overlay').classList.remove('hidden');
+}
+
+// Function to close Modal
+function closeModal(modalId) {
+  document.getElementById(modalId).classList.add('hidden');
+  document.getElementById('overlay').classList.add('hidden');
+}
+
+// Function to close all modals
+function closeAllModals() {
+  const modals = document.querySelectorAll('.modal');
+  modals.forEach(modal => modal.classList.add('hidden'));
+  document.getElementById('overlay').classList.add('hidden');
+}
+
+
+  </script>
+</body>
+</html>
