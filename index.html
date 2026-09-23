@@ -635,8 +635,8 @@
         return;
       }
 
-      if (usersDB[currentUser].balance < amount) {
-        displayMessage('transactionMessage', 'Insufficient balance.', 'error');
+      if (usersDB[currentUser].balance - amount < 500) {
+        displayMessage('transactionMessage', 'You must maintain a minimum balance of 500.', 'error');
         return;
       }
 
