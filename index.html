@@ -600,10 +600,12 @@
         displayMessage('transactionMessage', 'Please enter a valid amount to withdraw.', 'error');
         return;
       }
-      if (usersDB[currentUser].balance < amount) {
-        displayMessage('transactionMessage', 'Insufficient balance.', 'error');
+      if (usersDB[currentUser].balance < amount + 20) {
+        displayMessage('transactionMessage', 'Insufficient balance including withdrawal fee.', 'error');
         return;
       }
+
+      usersDB[currentUser].balance -= amount + 20;
       usersDB[currentUser].balance -= amount;
       usersDB[currentUser].history.push({ type: 'Withdraw', amount: amount, detail: null });
       updateLocalStorage();
