@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>BANK</title>
+    <style>
+        .log_box {
+            background-color: antiquewhite;
+            height: 300px;
+            width: 300px;
+            margin-left: 500px;
+            text-align: center;
+            padding-top: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .button1 {
+            color: green;
+            margin-top: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        input {
+            margin-top: 20px;
+            padding: 10px;
+            width: 80%;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="log_box" id="log_box">
+        <input  id="user_in" type="text" placeholder="Username"><br>
+        <input id="pass_in" type="password" placeholder="Password"><br>
+        <button class="button1" id="log_btn">LOGIN</button>
+    </div>
+
+    <div class="main">
+
+        <div class="row">
+
+            <div class="col-4">
+                <div class="card" style="width:18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">Deposit</h5>
+                        <h6 class="card-subtitle">$ <span>00</span></h6>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-4">
+                <div class="card" style="width:18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">Withdraw</h5>
+                        <h6 class="card-subtitle">$ <span>00</span></h6>
+                    </div>
+                </div>
+
+            </div>
+
+            </div>
+
+            <div class="col-4">
+                <div class="card" style="width:18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">Balance</h5>
+                        <h6 class="card-subtitle">$ <span>00</span></h6>
+                    </div>
+                </div>
+
+            </div>
+
+            </div>
+            
+        </div>
+    </div>
+
+
+
+
+    <script>
+        document.getElementById("log_btn").addEventListener("click", logbtn);
+
+        function logbtn() {
+            var log_boxs = document.getElementById("log_box");
+
+            var userN=document.getElementById("user_in").value;
+            var userpass=document.getElementById('pass_in').value;
+
+            if(userN===""){
+                alert("Inavlid User");
+            }
+            else if(userpass===""){
+                alert("invalid password");
+            }
+            else{
+
+            }
+            log_boxs.style.display = "none";
+        }
+    </script>
+
+</body>
+
+</html>

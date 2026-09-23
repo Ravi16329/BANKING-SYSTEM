@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Bank Application</title>
+  <style>
+    /* Basic styling for the app */
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 400px;
+      margin: auto;
+      padding-top: 50px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+
+    button {
+      padding: 10px 20px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .transaction-history {
+      text-align: left;
+    } 
+
+    .message {
+      padding: 10px;
+      margin-top: 10px;
+      color: green;
+    }
+
+    .error {
+      color: red;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Login Page -->
+    <div id="loginPage">
+      <h2>Login to Your Account</h2>
+      <input type="text" id="loginUsername" placeholder="Username" />
+      <input type="password" id="loginPassword" placeholder="Password" />
+      <button onclick="login()">Login</button>
+      <p>New to the bank? <button onclick="showSignUp()">Create an Account</button></p>
+      <div id="loginMessage" class="message hidden"></div>
+    </div>
+
+    <!-- Sign Up Page -->
+    <div id="signUpPage" class="hidden">
+      <h2>Create Your Account</h2>
+      <input type="text" id="signUpUsername" placeholder="Choose a Username" />
+      <input type="password" id="signUpPassword" placeholder="Choose a Password" />
+      <button onclick="signUp()">Sign Up</button>
+      <p>Already have an account? <button onclick="showLogin()">Back to Login</button></p>
+      <div id="signUpMessage" class="message hidden"></div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div id="dashboardPage" class="hidden">
+      <h2>Welcome, <span id="userWelcome"></span></h2>
+      <p>Balance: $<span id="balance">0</span></p>
+      <input type="number" id="transactionAmount" placeholder="Enter amount" />
+      <button onclick="credit()">Credit</button>
+      <button onclick="debit()">Debit</button>
+
+      <h3>Transaction History</h3>
+      <div class="transaction-history" id="transactionHistory"></div>
+
+      <div id="transactionMessage" class="message hidden"></div>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+<script>
+    // Simulate a simple database for users and their accounts
+let usersDB = {};
+let currentUser = null;
+
+// Function to show login page
+function showLogin() {
+  document.getElementById("loginPage").classList.remove("hidden");
+  document.getElementById("signUpPage").classList.add("hidden");
+  document.getElementById("dashboardPage").classList.add("hidden");
+  clearMessages();
+}
+
+// Function to show sign-up page
+function showSignUp() {
+  document.getElementById("loginPage").classList.add("hidden");
+  document.getElementById("signUpPage").classList.remove("hidden");
+  clearMessages();
+}
+
+// Function to clear all messages
+function clearMessages() {
+  document.getElementById("loginMessage").classList.add("hidden");
+  document.getElementById("signUpMessage").classList.add("hidden");
+  document.getElementById("transactionMessage").classList.add("hidden");
+}
+
+// Function to display message
+function displayMessage(elementId, message, isError = false) {
+  const element = document.getElementById(elementId);
+  element.innerText = message;
+  element.classList.remove("hidden");
+  element.classList.toggle("error", isError);
+}
+
+// Function to sign up new user
+function signUp() {
+  const username = document.getElementById("signUpUsername").value;
+  const password = document.getElementById("signUpPassword").value;
+
+  if (username && password) {
+    if (usersDB[username]) {
+      displayMessage("signUpMessage", "Username already exists! Try a different one.", true);
+    } else {
+      usersDB[username] = { password: password, balance: 0, history: [] };
+      displayMessage("signUpMessage", "Account created successfully!");
+      setTimeout(showLogin, 2000); // Redirect to login after 2 seconds
+    }
+  } else {
+    displayMessage("signUpMessage", "Please enter both username and password.", true);
+  }
+}
+
+// Function to log in user
+function login() {
+  const username = document.getElementById("loginUsername").value;
+  const password = document.getElementById("loginPassword").value;
+
+  if (usersDB[username] && usersDB[username].password === password) {
+    currentUser = username;
+    displayMessage("loginMessage", "Login successful!");
+    setTimeout(() => {
+      document.getElementById("userWelcome").innerText = currentUser;
+      updateDashboard();
+      showDashboard();
+    }, 1000);
+  } else {
+    displayMessage("loginMessage", "Invalid username or password!", true);
+  }
+}
+
+// Function to show dashboard
+function showDashboard() {
+  document.getElementById("loginPage").classList.add("hidden");
+  document.getElementById("signUpPage").classList.add("hidden");
+  document.getElementById("dashboardPage").classList.remove("hidden");
+}
+
+// Function to update the balance and transaction history on the dashboard
+function updateDashboard() {
+  document.getElementById("balance").innerText = usersDB[currentUser].balance;
+  let historyHTML = '';
+  usersDB[currentUser].history.forEach((transaction, index) => {
+    historyHTML += `<p>${index + 1}. ${transaction.type}: $${transaction.amount}</p>`;
+  });
+  document.getElementById("transactionHistory").innerHTML = historyHTML;
+}
+
+// Function to credit the account
+function credit() {
+  const amount = parseFloat(document.getElementById("transactionAmount").value);
+  if (amount > 0) {
+    usersDB[currentUser].balance += amount;
+    usersDB[currentUser].history.push({ type: 'Credit', amount: amount });
+    updateDashboard();
+    displayMessage("transactionMessage", `Successfully credited $${amount}.`);
+    document.getElementById("transactionAmount").value = '';
+  } else {
+    displayMessage("transactionMessage", "Please enter a valid amount.", true);
+  }
+}
+
+// Function to debit the account
+function debit() {
+  const amount = parseFloat(document.getElementById("transactionAmount").value);
+  if (amount > 0 && usersDB[currentUser].balance >= amount) {
+    usersDB[currentUser].balance -= amount;
+    usersDB[currentUser].history.push({ type: 'Debit', amount: amount });
+    updateDashboard();
+    displayMessage("transactionMessage", `Successfully debited $${amount}.`);
+    document.getElementById("transactionAmount").value = '';
+  } else {
+    displayMessage("transactionMessage", "Invalid amount or insufficient balance.", true);
+  }
+}
+
+// Function to log out
+function logout() {
+  currentUser = null;
+  displayMessage("loginMessage", "Logged out!");
+  setTimeout(showLogin, 1000);
+}
+
+</script>
+</html>
