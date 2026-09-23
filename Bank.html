@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,7 +37,7 @@
 
     .transaction-history {
       text-align: left;
-    } 
+    }
 
     .message {
       padding: 10px;
@@ -47,9 +48,9 @@
     .error {
       color: red;
     }
-
   </style>
 </head>
+
 <body>
   <div class="container">
     <!-- Login Page -->
@@ -89,130 +90,144 @@
   </div>
 
   <script src="app.js"></script>
+
+  <h2>Login</h2>
+
+  <form>
+    <label>Username:</label>
+    <input type="text" id="username">
+
+    <label>Password:</label>
+    <input type="password" id="password">
+
+    <button type="submit">Login</button>
+  </form>
+
 </body>
 
 <script>
-    // Simulate a simple database for users and their accounts
-let usersDB = {};
-let currentUser = null;
+  // Simulate a simple database for users and their accounts
+  let usersDB = {};
+  let currentUser = null;
 
-// Function to show login page
-function showLogin() {
-  document.getElementById("loginPage").classList.remove("hidden");
-  document.getElementById("signUpPage").classList.add("hidden");
-  document.getElementById("dashboardPage").classList.add("hidden");
-  clearMessages();
-}
+  // Function to show login page
+  function showLogin() {
+    document.getElementById("loginPage").classList.remove("hidden");
+    document.getElementById("signUpPage").classList.add("hidden");
+    document.getElementById("dashboardPage").classList.add("hidden");
+    clearMessages();
+  }
 
-// Function to show sign-up page
-function showSignUp() {
-  document.getElementById("loginPage").classList.add("hidden");
-  document.getElementById("signUpPage").classList.remove("hidden");
-  clearMessages();
-}
+  // Function to show sign-up page
+  function showSignUp() {
+    document.getElementById("loginPage").classList.add("hidden");
+    document.getElementById("signUpPage").classList.remove("hidden");
+    clearMessages();
+  }
 
-// Function to clear all messages
-function clearMessages() {
-  document.getElementById("loginMessage").classList.add("hidden");
-  document.getElementById("signUpMessage").classList.add("hidden");
-  document.getElementById("transactionMessage").classList.add("hidden");
-}
+  // Function to clear all messages
+  function clearMessages() {
+    document.getElementById("loginMessage").classList.add("hidden");
+    document.getElementById("signUpMessage").classList.add("hidden");
+    document.getElementById("transactionMessage").classList.add("hidden");
+  }
 
-// Function to display message
-function displayMessage(elementId, message, isError = false) {
-  const element = document.getElementById(elementId);
-  element.innerText = message;
-  element.classList.remove("hidden");
-  element.classList.toggle("error", isError);
-}
+  // Function to display message
+  function displayMessage(elementId, message, isError = false) {
+    const element = document.getElementById(elementId);
+    element.innerText = message;
+    element.classList.remove("hidden");
+    element.classList.toggle("error", isError);
+  }
 
-// Function to sign up new user
-function signUp() {
-  const username = document.getElementById("signUpUsername").value;
-  const password = document.getElementById("signUpPassword").value;
+  // Function to sign up new user
+  function signUp() {
+    const username = document.getElementById("signUpUsername").value;
+    const password = document.getElementById("signUpPassword").value;
 
-  if (username && password) {
-    if (usersDB[username]) {
-      displayMessage("signUpMessage", "Username already exists! Try a different one.", true);
+    if (username && password) {
+      if (usersDB[username]) {
+        displayMessage("signUpMessage", "Username already exists! Try a different one.", true);
+      } else {
+        usersDB[username] = { password: password, balance: 0, history: [] };
+        displayMessage("signUpMessage", "Account created successfully!");
+        setTimeout(showLogin, 2000); // Redirect to login after 2 seconds
+      }
     } else {
-      usersDB[username] = { password: password, balance: 0, history: [] };
-      displayMessage("signUpMessage", "Account created successfully!");
-      setTimeout(showLogin, 2000); // Redirect to login after 2 seconds
+      displayMessage("signUpMessage", "Please enter both username and password.", true);
     }
-  } else {
-    displayMessage("signUpMessage", "Please enter both username and password.", true);
   }
-}
 
-// Function to log in user
-function login() {
-  const username = document.getElementById("loginUsername").value;
-  const password = document.getElementById("loginPassword").value;
+  // Function to log in user
+  function login() {
+    const username = document.getElementById("loginUsername").value;
+    const password = document.getElementById("loginPassword").value;
 
-  if (usersDB[username] && usersDB[username].password === password) {
-    currentUser = username;
-    displayMessage("loginMessage", "Login successful!");
-    setTimeout(() => {
-      document.getElementById("userWelcome").innerText = currentUser;
+    if (usersDB[username] && usersDB[username].password === password) {
+      currentUser = username;
+      displayMessage("loginMessage", "Login successful!");
+      setTimeout(() => {
+        document.getElementById("userWelcome").innerText = currentUser;
+        updateDashboard();
+        showDashboard();
+      }, 1000);
+    } else {
+      displayMessage("loginMessage", "Invalid username or password!", true);
+    }
+  }
+
+  // Function to show dashboard
+  function showDashboard() {
+    document.getElementById("loginPage").classList.add("hidden");
+    document.getElementById("signUpPage").classList.add("hidden");
+    document.getElementById("dashboardPage").classList.remove("hidden");
+  }
+
+  // Function to update the balance and transaction history on the dashboard
+  function updateDashboard() {
+    document.getElementById("balance").innerText = usersDB[currentUser].balance;
+    let historyHTML = '';
+    usersDB[currentUser].history.forEach((transaction, index) => {
+      historyHTML += `<p>${index + 1}. ${transaction.type}: $${transaction.amount}</p>`;
+    });
+    document.getElementById("transactionHistory").innerHTML = historyHTML;
+  }
+
+  // Function to credit the account
+  function credit() {
+    const amount = parseFloat(document.getElementById("transactionAmount").value);
+    if (amount > 0) {
+      usersDB[currentUser].balance += amount;
+      usersDB[currentUser].history.push({ type: 'Credit', amount: amount });
       updateDashboard();
-      showDashboard();
-    }, 1000);
-  } else {
-    displayMessage("loginMessage", "Invalid username or password!", true);
+      displayMessage("transactionMessage", `Successfully credited $${amount}.`);
+      document.getElementById("transactionAmount").value = '';
+    } else {
+      displayMessage("transactionMessage", "Please enter a valid amount.", true);
+    }
   }
-}
 
-// Function to show dashboard
-function showDashboard() {
-  document.getElementById("loginPage").classList.add("hidden");
-  document.getElementById("signUpPage").classList.add("hidden");
-  document.getElementById("dashboardPage").classList.remove("hidden");
-}
-
-// Function to update the balance and transaction history on the dashboard
-function updateDashboard() {
-  document.getElementById("balance").innerText = usersDB[currentUser].balance;
-  let historyHTML = '';
-  usersDB[currentUser].history.forEach((transaction, index) => {
-    historyHTML += `<p>${index + 1}. ${transaction.type}: $${transaction.amount}</p>`;
-  });
-  document.getElementById("transactionHistory").innerHTML = historyHTML;
-}
-
-// Function to credit the account
-function credit() {
-  const amount = parseFloat(document.getElementById("transactionAmount").value);
-  if (amount > 0) {
-    usersDB[currentUser].balance += amount;
-    usersDB[currentUser].history.push({ type: 'Credit', amount: amount });
-    updateDashboard();
-    displayMessage("transactionMessage", `Successfully credited $${amount}.`);
-    document.getElementById("transactionAmount").value = '';
-  } else {
-    displayMessage("transactionMessage", "Please enter a valid amount.", true);
+  // Function to debit the account
+  function debit() {
+    const amount = parseFloat(document.getElementById("transactionAmount").value);
+    if (amount > 0 && usersDB[currentUser].balance >= amount) {
+      usersDB[currentUser].balance -= amount;
+      usersDB[currentUser].history.push({ type: 'Debit', amount: amount });
+      updateDashboard();
+      displayMessage("transactionMessage", `Successfully debited $${amount}.`);
+      document.getElementById("transactionAmount").value = '';
+    } else {
+      displayMessage("transactionMessage", "Invalid amount or insufficient balance.", true);
+    }
   }
-}
 
-// Function to debit the account
-function debit() {
-  const amount = parseFloat(document.getElementById("transactionAmount").value);
-  if (amount > 0 && usersDB[currentUser].balance >= amount) {
-    usersDB[currentUser].balance -= amount;
-    usersDB[currentUser].history.push({ type: 'Debit', amount: amount });
-    updateDashboard();
-    displayMessage("transactionMessage", `Successfully debited $${amount}.`);
-    document.getElementById("transactionAmount").value = '';
-  } else {
-    displayMessage("transactionMessage", "Invalid amount or insufficient balance.", true);
+  // Function to log out
+  function logout() {
+    currentUser = null;
+    displayMessage("loginMessage", "Logged out!");
+    setTimeout(showLogin, 1000);
   }
-}
-
-// Function to log out
-function logout() {
-  currentUser = null;
-  displayMessage("loginMessage", "Logged out!");
-  setTimeout(showLogin, 1000);
-}
 
 </script>
+
 </html>
