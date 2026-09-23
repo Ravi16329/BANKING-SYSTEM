@@ -314,7 +314,9 @@
       <h2>Create Your Account</h2>
       <form id="signUpForm">
         <label for="signUpUsername">Username:</label>
-        <input type="text" id="signUpUsername" placeholder="Choose a Username" required />
+        <!-- <input type="text" id="signUpUsername" placeholder="Choose a Username" required /> -->
+        <input type="text" id="loginUsername" placeholder="Enter Username" required
+          oninput="this.value = this.value.trim()" />
 
         <label for="signUpPassword">Password:</label>
         <input type="password" id="signUpPassword" placeholder="Choose a Password" required />
